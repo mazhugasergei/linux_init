@@ -39,12 +39,14 @@ fi
 
 if [[ "$INSTALL_DESKTOP" == "y" ]]; then
 
+  # Install GNOME desktop
   apt install -y --no-install-recommends \
     gnome-session gnome-shell gdm3 gvfs gvfs-backends \
     network-manager-gnome nautilus gnome-terminal gnome-tweaks \
     gnome-text-editor gnome-system-monitor xdg-desktop-portal-gnome \
     fonts-cantarell
 
+  # Install Brave browser
   curl -fsS https://dl.brave.com/install.sh | sh
 
 else
