@@ -10,7 +10,7 @@ ask_yn() {
   local prompt="$1"
   local answer
   while true; do
-    read -rp "$prompt [y/N]: " answer
+    read -rp "$prompt [y/N]: " answer </dev/tty
     answer="${answer,,}"
     case "$answer" in
       y|yes) return 0 ;;
