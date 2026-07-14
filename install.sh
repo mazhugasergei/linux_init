@@ -1,9 +1,7 @@
 #!/bin/bash
 set -e
 
-TARGET_USER="$USER"
 
-# Check if the script is run as root
 running_as_root || { echo "Run this script as root (or via su -c)."; exit 1; }
 
 
@@ -14,14 +12,14 @@ source "$UTILS_DIR/shell.sh"
 source "$UTILS_DIR/source.sh"
 source "$UTILS_DIR/config.sh"
 
-
+# Confirm prompts
 confirm "Install desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
 
 apt update
 apt install -y sudo git curl btop fastfetch
 setup_fastfetch
 
-setup_sudoers
+setup_sudoers "$(get_real_user)"
 
 # Install desktop apps if requested
 if [[ "$INSTALL_DESKTOP" == "y" ]]; then

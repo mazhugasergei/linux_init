@@ -7,16 +7,51 @@ running_as_root() {
   fi
 }
 
+# Get the real user who invoked the script, even if run with sudo or pkexec
+get_real_user() {
+  # Priority order (best to worst)
+  if [ -n "${SUDO_USER:-}" ]; then
+    echo "$SUDO_USER"
+  elif [ -n "${PKEXEC_UID:-}" ]; then
+    id -un "$PKEXEC_UID"
+  elif [ -n "${ORIGINAL_USER:-}" ]; then
+    echo "$ORIGINAL_USER"
+  else
+    # Fallback
+    echo "${USER:-$(whoami)}"
+  fi
+}
+
 # Setup sudoers for the target user if not root
 setup_sudoers() {
-  local target_user="$1"
-  if [ "$target_user" != "root" ]; then
-    echo "${target_user} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/99-${target_user}-nopasswd
-    chmod 0440 /etc/sudoers.d/99-${target_user}-nopasswd
-    /usr/sbin/visudo -cf /etc/sudoers.d/99-${target_user}-nopasswd
-  else
-    echo "Running as root — skipping sudoers setup."
+  local users=("$@")  # Accept all arguments as array
+
+  # If no arguments provided, use current user
+  if [ ${#users[@]} -eq 0 ]; then
+    users=("$USER")
   fi
+
+  for user in "${users[@]}"; do
+    if [ -z "$user" ] || [ "$user" = "root" ]; then
+      echo "Skipping root or empty username."
+      continue
+    fi
+
+    echo "Setting up passwordless sudo for user: $user"
+
+    cat > "/etc/sudoers.d/99-${user}-nopasswd" << EOF
+$user ALL=(ALL) NOPASSWD:ALL
+EOF
+
+    chmod 0440 "/etc/sudoers.d/99-${user}-nopasswd"
+    /usr/sbin/visudo -cf "/etc/sudoers.d/99-${user}-nopasswd" || {
+      echo "Error: Failed to validate sudoers file for $user"
+      rm -f "/etc/sudoers.d/99-${user}-nopasswd"
+      return 1
+    }
+  done
+
+  echo "Sudoers setup completed for: ${users[*]}"
 }
 
 # Logger object with dot notation methods
