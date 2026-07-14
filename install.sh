@@ -3,35 +3,27 @@ set -e
 
 TARGET_USER="$USER"
 
-[ "$(id -u)" -eq 0 ] || { echo "Run this script as root (or via su -c)."; exit 1; }
+# Check if the script is run as root
+running_as_root || { echo "Run this script as root (or via su -c)."; exit 1; }
 
-ask_yn() {
-  local prompt="$1"
-  local answer
-  while true; do
-    read -rp "$prompt [y/N]: " answer
-    answer="${answer,,}"
-    case "$answer" in
-      y|yes) return 0 ;;
-      n|no|"") return 1 ;;
-      *) echo "Please answer y or n." ;;
-    esac
-  done
-}
 
-ask_yn "Install desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
+# Source utilities
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+UTILS_DIR="$SCRIPT_DIR/_/zsh/utils"
+source "$UTILS_DIR/shell.sh"
+source "$UTILS_DIR/source.sh"
+source "$UTILS_DIR/config.sh"
+
+
+confirm "Install desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
 
 apt update
 apt install -y sudo git curl btop fastfetch
+setup_fastfetch
 
-if [ "$TARGET_USER" != "root" ]; then
-  echo "${TARGET_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/99-${TARGET_USER}-nopasswd
-  chmod 0440 /etc/sudoers.d/99-${TARGET_USER}-nopasswd
-  /usr/sbin/visudo -cf /etc/sudoers.d/99-${TARGET_USER}-nopasswd
-else
-  echo "Running as root — skipping sudoers setup."
-fi
+setup_sudoers
 
+# Install desktop apps if requested
 if [[ "$INSTALL_DESKTOP" == "y" ]]; then
   apt install -y --no-install-recommends \
     gnome-session gnome-shell gdm3 gvfs gvfs-backends \
