@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-TARGET_USER="${1:-$USER}"
+TARGET_USER="$USER"
 
 [ "$(id -u)" -eq 0 ] || { echo "Run this script as root (or via su -c)."; exit 1; }
 
