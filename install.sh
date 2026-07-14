@@ -26,7 +26,7 @@ ask_yn "Install desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL
 # --- Installation starts here ---
 
 apt update
-apt install -y sudo git curl
+apt install -y sudo git curl wget btop fastfetch
 
 # Passwordless sudo for TARGET_USER — skip if already root
 if [ "$TARGET_USER" != "root" ]; then
