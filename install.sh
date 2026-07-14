@@ -28,10 +28,14 @@ ask_yn "Install desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL
 apt update
 apt install -y sudo git curl
 
-# Passwordless sudo for TARGET_USER
-echo "${TARGET_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/99-${TARGET_USER}-nopasswd
-chmod 0440 /etc/sudoers.d/99-${TARGET_USER}-nopasswd
-visudo -cf /etc/sudoers.d/99-${TARGET_USER}-nopasswd
+# Passwordless sudo for TARGET_USER — skip if already root
+if [ "$TARGET_USER" != "root" ]; then
+  echo "${TARGET_USER} ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/99-${TARGET_USER}-nopasswd
+  chmod 0440 /etc/sudoers.d/99-${TARGET_USER}-nopasswd
+  visudo -cf /etc/sudoers.d/99-${TARGET_USER}-nopasswd
+else
+  echo "Running as root — skipping sudoers setup."
+fi
 
 if [[ "$INSTALL_DESKTOP" == "y" ]]; then
 
