@@ -8,5 +8,5 @@ chmod +x build.sh
 ## Usage
 
 ```
-su -c "bash <(wget -qO- https://raw.githubusercontent.com/mazhugasergei/linux_init/refs/heads/main/install.sh)"
+su -c "bash <(wget -qO- https://raw.githubusercontent.com/mazhugasergei/debian_init/refs/heads/main/install.sh)"
 ```
