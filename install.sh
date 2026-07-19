@@ -87,7 +87,6 @@ setup_fastfetch() {
 }
 EOF
 	
-	clear_previous_line
 	if [ $? -eq 0 ]; then
 		logger done "fastfetch configuration created"
 		return 0
