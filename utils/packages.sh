@@ -4,10 +4,7 @@ install_must_have_packages() {
 }
 
 install_desktop_packages() {
-  local install_desktop="n"
-  confirm "Install minimal desktop apps (GNOME + Brave)?" && install_desktop="y" || install_desktop="n"
-
-  if [[ "$install_desktop" == "y" ]]; then
+  if [[ "$INSTALL_DESKTOP" == "y" ]]; then
     logger info "Installing desktop packages..."
     
     apt install -y --no-install-recommends \
