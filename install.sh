@@ -2,31 +2,14 @@
 set -e
 
 
-
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 UTILS_DIR="$SCRIPT_DIR/utils"
 
-# Confirm prompts
-confirm "Install desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
-
 apt update
-apt install -y sudo git curl btop fastfetch
+install_must_have_packages
 setup_fastfetch
-
 setup_sudoers "$(get_real_user)"
-
-# Install desktop apps if requested
-if [[ "$INSTALL_DESKTOP" == "y" ]]; then
-  apt install -y --no-install-recommends \
-    gnome-session gnome-shell gdm3 gvfs gvfs-backends \
-    network-manager-gnome nautilus gnome-terminal gnome-tweaks \
-    gnome-text-editor gnome-system-monitor xdg-desktop-portal-gnome \
-    fonts-cantarell
-
-  curl -fsS https://dl.brave.com/install.sh | sh
-else
-  logger info "Skipping desktop install."
-fi
+install_desktop_packages
 
 logger done "Done."
 
@@ -96,6 +79,30 @@ EOF
 		logger error "failed to create fastfetch configuration"
 		return 1
 	fi
+}
+
+
+  logger info "Installing must-have packages..."
+  apt install -y "${must_have_packages[@]}"
+}
+
+install_desktop_packages() {
+  local install_desktop="n"
+  confirm "Install minimal desktop apps (GNOME + Brave)?" && install_desktop="y" || install_desktop="n"
+
+  if [[ "$install_desktop" == "y" ]]; then
+    logger info "Installing desktop packages..."
+    
+    apt install -y --no-install-recommends \
+      gnome-session gnome-shell gdm3 gvfs gvfs-backends \
+      network-manager-gnome nautilus gnome-terminal gnome-tweaks \
+      gnome-text-editor gnome-system-monitor xdg-desktop-portal-gnome \
+      fonts-cantarell
+
+    curl -fsS https://dl.brave.com/install.sh | sh
+  else
+    logger info "Skipping desktop install."
+  fi
 }
 
 
