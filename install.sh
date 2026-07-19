@@ -2,6 +2,7 @@
 set -e
 
 
+must_have_packages=(
   sudo
   git
   curl
@@ -26,6 +27,7 @@ desktop_packages=(
 )
 
 
+# Create fastfetch configuration
 # Usage: setup_fastfetch
 # Returns: 0 on success, 1 on failure
 setup_fastfetch() {
@@ -94,6 +96,7 @@ EOF
 }
 
 
+install_must_have_packages() {
   logger info "Installing must-have packages..."
   apt install -y "${must_have_packages[@]}"
 }
@@ -118,6 +121,7 @@ install_desktop_packages() {
 }
 
 
+# Check if the script is running as root
 # Returns 0 if yes, 1 otherwise
 is_running_as_root() {
   if [ "$(id -u)" -eq 0 ]; then
@@ -239,9 +243,12 @@ confirm() {
 }
 
 
+source_if_exists() {
   [ -s "$1" ] && source "$1"
 }
 
+
+is_running_as_root || { echo "Run this script as root (or via su -c)."; exit 1; }
 
 apt update
 install_must_have_packages

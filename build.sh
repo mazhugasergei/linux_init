@@ -7,6 +7,20 @@ UTILS_DIR="utils"
 LIB_DIR="lib"
 OUTPUT_FILE="install.sh"
 
+# Appends a file to OUTPUT_FILE, stripping the shebang line only if present
+append_file() {
+  local file="$1"
+  if [ -f "$file" ]; then
+    echo "" >> "$OUTPUT_FILE"
+    if head -n 1 "$file" | grep -q '^#!'; then
+      tail -n +2 "$file" >> "$OUTPUT_FILE"
+    else
+      cat "$file" >> "$OUTPUT_FILE"
+    fi
+    echo "" >> "$OUTPUT_FILE"
+  fi
+}
+
 # Start fresh
 cat > "$OUTPUT_FILE" << 'EOT'
 #!/bin/bash
@@ -17,13 +31,7 @@ EOT
 # === Inline all lib/*.sh ===
 if [ -d "$LIB_DIR" ]; then
   for file in "$LIB_DIR"/*.sh; do
-    if [ -f "$file" ]; then
-      filename=$(basename "$file")
-      echo "" >> "$OUTPUT_FILE"
-      # Skip shebang line if present
-      tail -n +2 "$file" >> "$OUTPUT_FILE" 2>/dev/null || cat "$file" >> "$OUTPUT_FILE"
-      echo "" >> "$OUTPUT_FILE"
-    fi
+    append_file "$file"
   done
 else
   echo "⚠️  $LIB_DIR/ directory not found"
@@ -32,25 +40,14 @@ fi
 # === Inline all utils/*.sh ===
 if [ -d "$UTILS_DIR" ]; then
   for file in "$UTILS_DIR"/*.sh; do
-    if [ -f "$file" ]; then
-      filename=$(basename "$file")
-      echo "" >> "$OUTPUT_FILE"
-      # Skip shebang line if present
-      tail -n +2 "$file" >> "$OUTPUT_FILE" 2>/dev/null || cat "$file" >> "$OUTPUT_FILE"
-      echo "" >> "$OUTPUT_FILE"
-    fi
+    append_file "$file"
   done
 else
   echo "⚠️  $UTILS_DIR/ directory not found"
 fi
 
-# === Add main index.sh (skip shebang) ===
-if [ -f "$INDEX_FILE" ]; then
-  tail -n +2 "$INDEX_FILE" >> "$OUTPUT_FILE" 2>/dev/null || cat "$INDEX_FILE" >> "$OUTPUT_FILE"
-  echo "" >> "$OUTPUT_FILE"
-else
-  echo "⚠️  $INDEX_FILE not found — skipping main content"
-fi
+# === Add main index.sh (skip shebang if present) ===
+append_file "$INDEX_FILE"
 
 chmod +x "$OUTPUT_FILE"
 

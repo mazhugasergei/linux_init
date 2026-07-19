@@ -1,5 +1,7 @@
 ## Development
 
+Do not inlude shebang (#!/bin/bash) in any script files except `build.sh`
+
 ### Build
 
 ```
