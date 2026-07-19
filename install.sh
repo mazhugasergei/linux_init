@@ -241,7 +241,7 @@ confirm() {
 }
 
 
-is_running_as_root || { echo "Run this script as root (or via su -c)."; exit 1; }
+is_running_as_root || { logger error "Run this script as root (or via su -c)."; exit 1; }
 
 logger info "Starting installation script..."
 confirm "Install minimal desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
