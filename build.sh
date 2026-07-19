@@ -1,37 +1,58 @@
 #!/bin/bash
 set -e
 
+# === Paths ===
+INDEX_FILE="index.sh"
+UTILS_DIR="utils"
+LIB_DIR="lib"
+OUTPUT_FILE="install.sh"
+
 # Start fresh
-cat > install.sh << 'EOT'
+cat > "$OUTPUT_FILE" << 'EOT'
 #!/bin/bash
 set -e
 
 EOT
 
-# === Add main index.sh (skip shebang) ===
-if [ -f "index.sh" ]; then
-  tail -n +2 "index.sh" >> install.sh 2>/dev/null || cat "index.sh" >> install.sh
-  echo "" >> install.sh
-else
-  echo "⚠️  index.sh not found — skipping main content"
-fi
-
-# === Inline all utils/*.sh ===
-if [ -d "utils" ]; then
-  for file in utils/*.sh; do
+# === Inline all lib/*.sh ===
+if [ -d "$LIB_DIR" ]; then
+  for file in "$LIB_DIR"/*.sh; do
     if [ -f "$file" ]; then
       filename=$(basename "$file")
-      echo "" >> install.sh
+      echo "" >> "$OUTPUT_FILE"
       # Skip shebang line if present
-      tail -n +2 "$file" >> install.sh 2>/dev/null || cat "$file" >> install.sh
-      echo "" >> install.sh
+      tail -n +2 "$file" >> "$OUTPUT_FILE" 2>/dev/null || cat "$file" >> "$OUTPUT_FILE"
+      echo "" >> "$OUTPUT_FILE"
     fi
   done
 else
-  echo "⚠️  utils/ directory not found"
+  echo "⚠️  $LIB_DIR/ directory not found"
 fi
 
-chmod +x install.sh
+# === Inline all utils/*.sh ===
+if [ -d "$UTILS_DIR" ]; then
+  for file in "$UTILS_DIR"/*.sh; do
+    if [ -f "$file" ]; then
+      filename=$(basename "$file")
+      echo "" >> "$OUTPUT_FILE"
+      # Skip shebang line if present
+      tail -n +2 "$file" >> "$OUTPUT_FILE" 2>/dev/null || cat "$file" >> "$OUTPUT_FILE"
+      echo "" >> "$OUTPUT_FILE"
+    fi
+  done
+else
+  echo "⚠️  $UTILS_DIR/ directory not found"
+fi
+
+# === Add main index.sh (skip shebang) ===
+if [ -f "$INDEX_FILE" ]; then
+  tail -n +2 "$INDEX_FILE" >> "$OUTPUT_FILE" 2>/dev/null || cat "$INDEX_FILE" >> "$OUTPUT_FILE"
+  echo "" >> "$OUTPUT_FILE"
+else
+  echo "⚠️  $INDEX_FILE not found — skipping main content"
+fi
+
+chmod +x "$OUTPUT_FILE"
 
 echo "Done."
-ls -lh install.sh
+ls -lh "$OUTPUT_FILE"

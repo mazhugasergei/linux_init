@@ -2,16 +2,28 @@
 set -e
 
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UTILS_DIR="$SCRIPT_DIR/utils"
+  sudo
+  git
+  curl
+  btop
+  fastfetch
+)
 
-apt update
-install_must_have_packages
-setup_fastfetch
-setup_sudoers "$(get_real_user)"
-install_desktop_packages
-
-logger done "Done."
+desktop_packages=(
+  gnome-session
+  gnome-shell
+  gdm3
+  gvfs
+  gvfs-backends
+  network-manager-gnome
+  nautilus
+  gnome-terminal
+  gnome-tweaks
+  gnome-text-editor
+  gnome-system-monitor
+  xdg-desktop-portal-gnome
+  fonts-cantarell
+)
 
 
 # Usage: setup_fastfetch
@@ -229,4 +241,13 @@ confirm() {
 
   [ -s "$1" ] && source "$1"
 }
+
+
+apt update
+install_must_have_packages
+setup_fastfetch
+setup_sudoers "$(get_real_user)"
+install_desktop_packages
+
+logger done "Done."
 

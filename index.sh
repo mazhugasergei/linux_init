@@ -1,8 +1,5 @@
 is_running_as_root || { echo "Run this script as root (or via su -c)."; exit 1; }
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-UTILS_DIR="$SCRIPT_DIR/utils"
-
 apt update
 install_must_have_packages
 setup_fastfetch
