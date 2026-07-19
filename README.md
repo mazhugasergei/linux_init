@@ -1,6 +1,7 @@
 ## Development
 
 Do not inlude shebang (#!/bin/bash) in any script files except `build.sh`.
+
 Do not forget to run build sctipt before committing.
 
 ### Build
