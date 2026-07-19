@@ -1,0 +1,23 @@
+must_have_packages=(
+  sudo
+  git
+  curl
+  btop
+  fastfetch
+)
+
+desktop_packages=(
+  gnome-session
+  gnome-shell
+  gdm3
+  gvfs
+  gvfs-backends
+  network-manager-gnome
+  nautilus
+  gnome-terminal
+  gnome-tweaks
+  gnome-text-editor
+  gnome-system-monitor
+  xdg-desktop-portal-gnome
+  fonts-cantarell
+)

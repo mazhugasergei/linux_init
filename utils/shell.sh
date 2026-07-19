@@ -1,6 +1,6 @@
 # Check if the script is running as root
 # Returns 0 if yes, 1 otherwise
-running_as_root() {
+is_running_as_root() {
   if [ "$(id -u)" -eq 0 ]; then
     return 0
   else
