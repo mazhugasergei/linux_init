@@ -25,8 +25,8 @@ desktop_packages=(
 
 declare -A other_packages=(
   [node]='wget -qO- https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs'
-  [bun]='wget -qO- --show-progress https://bun.sh/install | bash'
-  [docker]='wget -qO- https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"'
+  [bun]='su - "$(get_real_user)" -c "wget -qO- https://bun.sh/install | bash"'
+  [docker]='wget -qO- https://get.docker.com | sudo sh && sudo usermod -aG docker "$(get_real_user)"'
 )
 
 declare -A other_desktop_packages=(
