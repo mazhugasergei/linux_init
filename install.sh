@@ -181,8 +181,6 @@ confirm() {
 }
 
 
-
-
 # Usage: logger <method> <message>
 # Methods: info, done, error, warn
 logger() {
