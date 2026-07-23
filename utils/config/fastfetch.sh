@@ -5,8 +5,6 @@ setup_fastfetch() {
 	local fastfetch_dir="$HOME/.config/fastfetch"
 	local config_file="$fastfetch_dir/config.jsonc"
 	
-	logger info "setting up fastfetch configuration..."
-	
 	# Create directory if it doesn't exist
 	if [ ! -d "$fastfetch_dir" ]; then
 		mkdir -p "$fastfetch_dir" || {
