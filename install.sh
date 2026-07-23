@@ -11,7 +11,7 @@ packages=(
   curl
   btop
   fastfetch
-  unzip
+  unzip # required for bun installation
 )
 
 desktop_packages=(
