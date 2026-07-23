@@ -3,7 +3,7 @@ is_running_as_root || { logger error "Run this script as root (or via su -c)."; 
 logger info "Starting installation script..."
 confirm "Install minimal desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
 apt update
-install_must_have_packages
+install_packages
 setup_fastfetch
 setup_sudoers "$(get_real_user)"
 install_desktop_packages

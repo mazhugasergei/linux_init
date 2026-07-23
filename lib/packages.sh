@@ -1,4 +1,4 @@
-must_have_packages=(
+packages=(
   sudo
   git
   curl
@@ -20,4 +20,14 @@ desktop_packages=(
   gnome-system-monitor
   xdg-desktop-portal-gnome
   fonts-cantarell
+)
+
+other_packages=(
+  [node]='wget -qO- https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs'
+  [bun]='wget -qO- --show-progress https://bun.sh/install | bash'
+  [docker]='wget -qO- https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"'
+)
+
+other_desktop_packages=(
+  [brave]='curl -fsS https://dl.brave.com/install.sh | sh'
 )
