@@ -32,7 +32,7 @@ setup_sudoers() {
     users=("$USER")
   fi
 
-  logger info "Setting up sudoers"
+  logger info "setting up sudoers"
 
   for user in "${users[@]}"; do
     if [ -z "$user" ] || [ "$user" = "root" ]; then

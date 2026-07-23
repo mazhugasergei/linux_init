@@ -110,15 +110,15 @@ EOF
 
 
 install_packages() {
-  logger info "Installing packages..."
+  logger info "installing packages..."
   
   apt install -y "${packages[@]}"
 
   for package in "${!other_packages[@]}"; do
     local install_cmd="${other_packages[$package]}"
     if ! command -v "$package" &> /dev/null; then
-      logger info "Installing $package..."
-      eval "$install_cmd" || logger error "Failed to install $package"
+      logger info "installing $package..."
+      eval "$install_cmd" || logger error "failed to install $package"
     else
       echo "$package is already installed."
     fi
@@ -127,20 +127,77 @@ install_packages() {
 
 install_desktop_packages() {
   if [[ "$INSTALL_DESKTOP" == "y" ]]; then
-    logger info "Installing desktop packages..."
+    logger info "installing desktop packages..."
 
     apt install -y --no-install-recommends "${desktop_packages[@]}"
     
     for package in "${!other_desktop_packages[@]}"; do
       local install_cmd="${other_desktop_packages[$package]}"
       if ! command -v "$package" &> /dev/null; then
-        logger info "Installing $package..."
-        eval "$install_cmd" || logger error "Failed to install $package"
+        logger info "installing $package..."
+        eval "$install_cmd" || logger error "failed to install $package"
       else
         echo "$package is already installed."
       fi
     done
   fi
+}
+
+
+print_help() {
+	echo "Usage: $0 [OPTIONS]"
+	echo ""
+	echo "OPTIONS:"
+	echo "  -h, --help					Show this help message"
+	echo ""
+}
+
+# Parse command line arguments
+# Usage: parse_arguments "$@"
+# Sets global variables: INSTALLATION_ERROR
+parse_arguments() {
+	# Initialize default values
+	SHOW_EFFECTS=false
+	INSTALLATION_ERROR=false
+	
+	while [[ $# -gt 0 ]]; do
+		case "$1" in
+			-h|--help)
+				print_help
+				exit 0
+				;;
+			-*)
+				# Handle combined short flags
+				flags=$(echo "$1" | sed 's/^-//')
+				for flag in $(echo "$flags" | fold -w1); do
+					case "$flag" in
+						e)
+							# Count 'e' flags to determine behavior
+							e_count=$(echo "$flags" | grep -o 'e' | wc -l)
+							if [ $e_count -eq 1 ]; then
+								SHOW_EFFECTS=true
+							elif [ $e_count -gt 1 ]; then
+								# Multiple 'e's means effects + errored
+								SHOW_EFFECTS=true
+								FORCE_ERROR=true
+							fi
+							;;
+						*)
+							echo "Unknown option: -$flag"
+							print_help
+							exit 1
+							;;
+					esac
+				done
+				shift
+				;;
+			*)
+				echo "Unknown option: $1"
+				print_help
+				exit 1
+				;;
+		esac
+	done
 }
 
 
@@ -207,6 +264,7 @@ logger() {
 	esac
 }
 
+
 # Check if the script is running as root
 # Returns 0 if yes, 1 otherwise
 is_running_as_root() {
@@ -241,7 +299,7 @@ setup_sudoers() {
     users=("$USER")
   fi
 
-  logger info "Setting up sudoers"
+  logger info "setting up sudoers"
 
   for user in "${users[@]}"; do
     if [ -z "$user" ] || [ "$user" = "root" ]; then
@@ -267,9 +325,10 @@ EOF
 }
 
 
-is_running_as_root || { logger error "Run this script as root (or via su -c)."; exit 1; }
+is_running_as_root || { logger error "run this script as root (or via su -c)."; exit 1; }
+parse_arguments "$@"
 
-logger info "Starting installation script..."
+logger info "starting installation script..."
 confirm "Install minimal desktop apps?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
 apt update
 install_packages
@@ -277,6 +336,6 @@ setup_fastfetch
 setup_sudoers "$(get_real_user)"
 install_desktop_packages
 
-logger done "Done."
-confirm "Reboot now?" "Y" && sudo reboot now || logger info "Reboot later to apply changes."
+logger done "done."
+confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes."
 
