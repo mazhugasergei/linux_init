@@ -29,7 +29,5 @@ install_desktop_packages() {
         logger done "$package is already installed."
       fi
     done
-  else
-    logger info "Skipping desktop install."
   fi
 }
