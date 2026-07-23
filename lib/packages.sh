@@ -22,12 +22,12 @@ desktop_packages=(
   fonts-cantarell
 )
 
-other_packages=(
+declare -A other_packages=(
   [node]='wget -qO- https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs'
   [bun]='wget -qO- --show-progress https://bun.sh/install | bash'
   [docker]='wget -qO- https://get.docker.com | sudo sh && sudo usermod -aG docker "$USER"'
 )
 
-other_desktop_packages=(
+declare -A other_desktop_packages=(
   [brave]='curl -fsS https://dl.brave.com/install.sh | sh'
 )

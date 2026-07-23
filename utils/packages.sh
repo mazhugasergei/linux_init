@@ -4,10 +4,10 @@ install_packages() {
   apt install -y "${packages[@]}"
 
   for package in "${!other_packages[@]}"; do
-    local install_function="${other_packages[$package]}"
+    local install_cmd="${other_packages[$package]}"
     if ! command -v "$package" &> /dev/null; then
       logger info "Installing $package..."
-      $install_function || logger error "Failed to install $package"
+      eval "$install_cmd" || logger error "Failed to install $package"
     else
       logger done "$package is already installed."
     fi
