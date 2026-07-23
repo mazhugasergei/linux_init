@@ -30,5 +30,5 @@ declare -A other_packages=(
 )
 
 declare -A other_desktop_packages=(
-  [brave]='curl -fsS https://dl.brave.com/install.sh | sh'
+  [brave]='wget -qO- https://dl.brave.com/install.sh | sh'
 )
