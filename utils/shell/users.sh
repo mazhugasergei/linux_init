@@ -32,6 +32,8 @@ setup_sudoers() {
     users=("$USER")
   fi
 
+  logger info "Setting up sudoers"
+
   for user in "${users[@]}"; do
     if [ -z "$user" ] || [ "$user" = "root" ]; then
       echo "Skipping root or empty username."
