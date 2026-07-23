@@ -26,10 +26,10 @@ confirm() {
         elif [ "$default" = "N" ] || [ "$default" = "n" ]; then
           return 1
         else
-          echo "Please answer y or n."
+          echo "Please answer yes or no."
         fi
         ;;
-      *) echo "Please answer y or n." ;;
+      *) echo "Please answer yes or no." ;;
     esac
   done
 }
