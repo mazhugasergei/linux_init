@@ -21,6 +21,18 @@ append_file() {
   fi
 }
 
+# Recursively appends all .sh files under a directory, in sorted order
+append_dir_recursive() {
+  local dir="$1"
+  if [ -d "$dir" ]; then
+    while IFS= read -r -d '' file; do
+      append_file "$file"
+    done < <(find "$dir" -type f -name '*.sh' -print0 | sort -z)
+  else
+    echo "⚠️  $dir/ directory not found"
+  fi
+}
+
 # Start fresh
 cat > "$OUTPUT_FILE" << 'EOT'
 #!/bin/bash
@@ -30,23 +42,11 @@ set -e
 
 EOT
 
-# === Inline all lib/*.sh ===
-if [ -d "$LIB_DIR" ]; then
-  for file in "$LIB_DIR"/*.sh; do
-    append_file "$file"
-  done
-else
-  echo "⚠️  $LIB_DIR/ directory not found"
-fi
+# === Inline all lib/**/*.sh ===
+append_dir_recursive "$LIB_DIR"
 
-# === Inline all utils/*.sh ===
-if [ -d "$UTILS_DIR" ]; then
-  for file in "$UTILS_DIR"/*.sh; do
-    append_file "$file"
-  done
-else
-  echo "⚠️  $UTILS_DIR/ directory not found"
-fi
+# === Inline all utils/**/*.sh ===
+append_dir_recursive "$UTILS_DIR"
 
 # === Add main index.sh (skip shebang if present) ===
 append_file "$INDEX_FILE"
