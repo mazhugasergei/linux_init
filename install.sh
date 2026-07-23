@@ -10,6 +10,7 @@ packages=(
   curl
   btop
   fastfetch
+  unzip
 )
 
 desktop_packages=(
@@ -118,7 +119,7 @@ install_packages() {
       logger info "Installing $package..."
       eval "$install_cmd" || logger error "Failed to install $package"
     else
-      logger done "$package is already installed."
+      echo "$package is already installed."
     fi
   done
 }
@@ -135,7 +136,7 @@ install_desktop_packages() {
         logger info "Installing $package..."
         eval "$install_cmd" || logger error "Failed to install $package"
       else
-        logger done "$package is already installed."
+        echo "$package is already installed."
       fi
     done
   fi
@@ -240,6 +241,8 @@ setup_sudoers() {
   if [ ${#users[@]} -eq 0 ]; then
     users=("$USER")
   fi
+
+  logger info "Setting up sudoers"
 
   for user in "${users[@]}"; do
     if [ -z "$user" ] || [ "$user" = "root" ]; then
