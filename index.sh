@@ -7,5 +7,6 @@ install_packages
 setup_fastfetch
 setup_sudoers "$(get_real_user)"
 install_desktop_packages
+
 logger done "Done."
 confirm "Reboot now?" "Y" && sudo reboot now || logger info "Reboot later to apply changes."
