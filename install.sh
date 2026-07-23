@@ -268,7 +268,7 @@ EOF
 is_running_as_root || { logger error "Run this script as root (or via su -c)."; exit 1; }
 
 logger info "Starting installation script..."
-confirm "Install minimal desktop apps (GNOME + Brave)?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
+confirm "Install minimal desktop apps?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
 apt update
 install_packages
 setup_fastfetch

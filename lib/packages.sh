@@ -4,6 +4,7 @@ packages=(
   curl
   btop
   fastfetch
+  unzip
 )
 
 desktop_packages=(
