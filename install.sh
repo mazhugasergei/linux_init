@@ -34,6 +34,8 @@ declare -A other_packages=(
   [node]='wget -qO- https://deb.nodesource.com/setup_lts.x | sudo -E bash - && sudo apt-get install -y nodejs'
   [bun]='su - "$(get_real_user)" -c "wget -qO- https://bun.sh/install | bash"'
   [docker]='wget -qO- https://get.docker.com | sudo sh && sudo usermod -aG docker "$(get_real_user)"'
+  [rustc]='su - "$(get_real_user)" -c "wget -qO- https://sh.rustup.rs | sh -s -- -y"'
+  [go]='GOVER=$(wget -qO- "https://go.dev/VERSION?m=text" | head -n1) && wget -qO- "https://go.dev/dl/${GOVER}.linux-amd64.tar.gz" | sudo tar -C /usr/local -xz && echo "export PATH=\$PATH:/usr/local/go/bin" | sudo tee /etc/profile.d/go.sh > /dev/null'
 )
 
 declare -A other_desktop_packages=(
@@ -47,8 +49,6 @@ declare -A other_desktop_packages=(
 setup_fastfetch() {
 	local fastfetch_dir="$HOME/.config/fastfetch"
 	local config_file="$fastfetch_dir/config.jsonc"
-	
-	logger info "setting up fastfetch configuration..."
 	
 	# Create directory if it doesn't exist
 	if [ ! -d "$fastfetch_dir" ]; then
@@ -109,9 +109,7 @@ EOF
 }
 
 
-install_packages() {
-  logger info "installing packages..."
-  
+install_packages() {  
   apt install -y "${packages[@]}"
 
   for package in "${!other_packages[@]}"; do
@@ -126,21 +124,17 @@ install_packages() {
 }
 
 install_desktop_packages() {
-  if [[ "$INSTALL_DESKTOP" == "y" ]]; then
-    logger info "installing desktop packages..."
-
-    apt install -y --no-install-recommends "${desktop_packages[@]}"
-    
-    for package in "${!other_desktop_packages[@]}"; do
-      local install_cmd="${other_desktop_packages[$package]}"
-      if ! command -v "$package" &> /dev/null; then
-        logger info "installing $package..."
-        eval "$install_cmd" || logger error "failed to install $package"
-      else
-        echo "$package is already installed."
-      fi
-    done
-  fi
+  apt install -y --no-install-recommends "${desktop_packages[@]}"
+  
+  for package in "${!other_desktop_packages[@]}"; do
+    local install_cmd="${other_desktop_packages[$package]}"
+    if ! command -v "$package" &> /dev/null; then
+      logger info "installing $package..."
+      eval "$install_cmd" || logger error "failed to install $package"
+    else
+      echo "$package is already installed."
+    fi
+  done
 }
 
 
@@ -299,8 +293,6 @@ setup_sudoers() {
     users=("$USER")
   fi
 
-  logger info "setting up sudoers"
-
   for user in "${users[@]}"; do
     if [ -z "$user" ] || [ "$user" = "root" ]; then
       echo "Skipping root or empty username."
@@ -325,16 +317,24 @@ EOF
 }
 
 
-is_running_as_root || { logger error "run this script as root (or via su -c)."; exit 1; }
 parse_arguments "$@"
-
+is_running_as_root || { logger error "run this script as root (or via su -c)."; exit 1; }
 logger info "starting installation script..."
+
 confirm "Install minimal desktop apps?" && INSTALL_DESKTOP="y" || INSTALL_DESKTOP="n"
+
+logger info "installing packages..."
 apt update
 install_packages
+
+logger info "setting up fastfetch configuration..."
 setup_fastfetch
+
+logger info "setting up sudoers..."
 setup_sudoers "$(get_real_user)"
-install_desktop_packages
+
+INSTALL_DESKTOP="y" && logger info "installing desktop packages..."
+INSTALL_DESKTOP="y" && install_desktop_packages
 
 logger done "done."
 confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes."
