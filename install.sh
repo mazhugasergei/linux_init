@@ -220,15 +220,15 @@ is_running_as_root() {
 
 # Get the real user who invoked the script, even if run with sudo or pkexec
 get_real_user() {
-  # Priority order (best to worst)
   if [ -n "${SUDO_USER:-}" ]; then
     echo "$SUDO_USER"
+  elif command -v logname &>/dev/null && logname 2>/dev/null; then
+    return
   elif [ -n "${PKEXEC_UID:-}" ]; then
     id -un "$PKEXEC_UID"
   elif [ -n "${ORIGINAL_USER:-}" ]; then
     echo "$ORIGINAL_USER"
   else
-    # Fallback
     echo "${USER:-$(whoami)}"
   fi
 }
