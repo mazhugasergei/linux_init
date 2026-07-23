@@ -7,6 +7,7 @@ set -e
 packages=(
   sudo
   git
+  gh
   curl
   btop
   fastfetch
