@@ -48,7 +48,7 @@ declare -A other_desktop_packages=(
 # Returns: 0 on success, 1 on failure
 setup_fastfetch() {
   logger info "setting up fastfetch configuration..."
-  
+
 	local fastfetch_dir="$HOME/.config/fastfetch"
 	local config_file="$fastfetch_dir/config.jsonc"
 	
@@ -101,6 +101,8 @@ setup_fastfetch() {
 }
 EOF
 	
+  echo "fastfetch configuration created at $config_file"
+
 	if [ $? -eq 0 ]; then
 		logger done "fastfetch configuration updated"
 		return 0
@@ -353,6 +355,6 @@ if [ "$INSTALL_DESKTOP" = "y" ]; then
   install_desktop_packages
 fi
 
-logger done "done"
+logger done "installation script completed"
 confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes"
 

@@ -3,7 +3,7 @@
 # Returns: 0 on success, 1 on failure
 setup_fastfetch() {
   logger info "setting up fastfetch configuration..."
-  
+
 	local fastfetch_dir="$HOME/.config/fastfetch"
 	local config_file="$fastfetch_dir/config.jsonc"
 	
@@ -56,6 +56,8 @@ setup_fastfetch() {
 }
 EOF
 	
+  echo "fastfetch configuration created at $config_file"
+
 	if [ $? -eq 0 ]; then
 		logger done "fastfetch configuration updated"
 		return 0

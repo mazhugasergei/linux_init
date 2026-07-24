@@ -17,5 +17,5 @@ if [ "$INSTALL_DESKTOP" = "y" ]; then
   install_desktop_packages
 fi
 
-logger done "done"
+logger done "installation script completed"
 confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes"
