@@ -101,7 +101,7 @@ setup_fastfetch() {
 }
 EOF
 	
-  echo "fastfetch configuration created at $config_file"
+  echo "fastfetch configuration created at ${BRIGHT_GRAY}${config_file}${RESET}"
 
 	if [ $? -eq 0 ]; then
 		logger done "fastfetch configuration updated"
@@ -111,7 +111,7 @@ EOF
 		return 1
 	fi
 }
-  
+
 
 install_packages() {  
   apt install -y "${packages[@]}"
@@ -141,6 +141,9 @@ install_desktop_packages() {
   done
 }
 
+
+BRIGHT_GRAY="\033[37m"
+RESET="\033[0m"
 
 print_help() {
 	echo "Usage: $0 [OPTIONS]"
@@ -290,10 +293,8 @@ get_real_user() {
 
 setup_sudoers() {
   local users=("$@")
-  local bright_gray="\033[37m"
-  local reset="\033[0m"
 
-  logger info "setting up passwordless sudo for users: ${bright_gray}${users[*]}${reset}"
+  logger info "setting up passwordless sudo for users: ${BRIGHT_GRAY}${users[*]}${RESET}"
 
   # if no users are provided, default to the current user
   if [ ${#users[@]} -eq 0 ]; then
@@ -309,7 +310,7 @@ setup_sudoers() {
 
     # skip if the user is root
     if [ "$user" = "root" ]; then
-      logger info "skipping user: ${bright_gray}${user}${reset}"
+      logger info "skipping user: ${BRIGHT_GRAY}${user}${RESET}"
       continue
     fi
 
@@ -320,7 +321,7 @@ setup_sudoers() {
     local sudoers_regex="${user_pattern}${perm_pattern}${nopasswd_pattern}"
 
     if grep -rEq "$sudoers_regex" /etc/sudoers /etc/sudoers.d/ 2>/dev/null; then
-      echo "alreadty has passwordless sudo: ${bright_gray}${user}${reset}"
+      echo "alreadty has passwordless sudo: ${BRIGHT_GRAY}${user}${RESET}"
       continue
     fi
 
@@ -340,7 +341,7 @@ EOF
       return 1
     }
 
-    logger info "passwordless sudo setup completed for user: ${bright_gray}${user}${reset}"
+    logger info "passwordless sudo setup completed for user: ${BRIGHT_GRAY}${user}${RESET}"
   done
 }
 

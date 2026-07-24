@@ -1,0 +1,2 @@
+BRIGHT_GRAY="\033[37m"
+RESET="\033[0m"
