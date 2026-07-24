@@ -1,11 +1,13 @@
-# Create fastfetch configuration
+# Set fastfetch configuration
 # Usage: setup_fastfetch
 # Returns: 0 on success, 1 on failure
 setup_fastfetch() {
+  logger info "setting up fastfetch configuration..."
+  
 	local fastfetch_dir="$HOME/.config/fastfetch"
 	local config_file="$fastfetch_dir/config.jsonc"
 	
-	# Create directory if it doesn't exist
+	# create directory if it doesn't exist
 	if [ ! -d "$fastfetch_dir" ]; then
 		mkdir -p "$fastfetch_dir" || {
 			logger error "failed to create fastfetch directory"
@@ -13,7 +15,7 @@ setup_fastfetch() {
 		}
 	fi
 	
-	# Create the configuration file
+	# create the configuration file
 	cat > "$config_file" << 'EOF'
 {
   "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
@@ -55,10 +57,10 @@ setup_fastfetch() {
 EOF
 	
 	if [ $? -eq 0 ]; then
-		logger done "fastfetch configuration created"
+		logger done "fastfetch configuration updated"
 		return 0
 	else
-		logger error "failed to create fastfetch configuration"
+		logger error "failed to update fastfetch configuration"
 		return 1
 	fi
 }

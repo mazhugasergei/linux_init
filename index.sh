@@ -8,7 +8,6 @@ logger info "installing packages..."
 apt update
 install_packages
 
-logger info "setting up fastfetch configuration..."
 setup_fastfetch
 
 setup_sudoers "$(get_real_user)"
@@ -18,5 +17,5 @@ if [ "$INSTALL_DESKTOP" = "y" ]; then
   install_desktop_packages
 fi
 
-logger done "done."
-confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes."
+logger done "done"
+confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes"
