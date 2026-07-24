@@ -11,7 +11,6 @@ install_packages
 logger info "setting up fastfetch configuration..."
 setup_fastfetch
 
-logger info "setting up sudoers..."
 setup_sudoers "$(get_real_user)"
 
 if [ "$INSTALL_DESKTOP" = "y" ]; then

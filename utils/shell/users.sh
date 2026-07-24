@@ -23,34 +23,49 @@ get_real_user() {
   fi
 }
 
-# Setup sudoers for the target user if not root
 setup_sudoers() {
-  local users=("$@")  # Accept all arguments as array
+  local users=("$@")
+  local gray="\033[90m"
+  local reset="\033[0m"
 
-  # If no arguments provided, use current user
+  # if no users are provided, default to the current user
   if [ ${#users[@]} -eq 0 ]; then
     users=("$USER")
   fi
 
+  # Loop through each user and set up passwordless sudo
   for user in "${users[@]}"; do
+    # skip if the user is empty or root
     if [ -z "$user" ] || [ "$user" = "root" ]; then
-      echo "Skipping root or empty username."
       continue
     fi
 
-    echo "Setting up passwordless sudo for user: $user"
+    # check if the user already has passwordless sudo
+    local user_pattern="^[[:space:]]*${user}[[:space:]]+"
+    local perm_pattern="ALL=\(ALL(:ALL)?\)[[:space:]]+"
+    local nopasswd_pattern="NOPASSWD:[[:space:]]*ALL"
+    local sudoers_regex="${user_pattern}${perm_pattern}${nopasswd_pattern}"
 
-    cat > "/etc/sudoers.d/99-${user}-nopasswd" << EOF
+    if grep -rEq "$sudoers_regex" /etc/sudoers /etc/sudoers.d/ 2>/dev/null; then
+      continue
+    fi
+
+    # create a sudoers file for the user with passwordless sudo
+    local sudoers_file="/etc/sudoers.d/99-${user}-nopasswd"
+
+    cat > "$sudoers_file" << EOF
 $user ALL=(ALL) NOPASSWD:ALL
 EOF
 
-    chmod 0440 "/etc/sudoers.d/99-${user}-nopasswd"
-    /usr/sbin/visudo -cf "/etc/sudoers.d/99-${user}-nopasswd" || {
-      echo "Error: Failed to validate sudoers file for $user"
-      rm -f "/etc/sudoers.d/99-${user}-nopasswd"
+    # lock down permissions, then validate before trusting the file;
+    # roll back on failure so a bad file never lingers in sudoers.d
+    chmod 0440 "$sudoers_file"
+    /usr/sbin/visudo -cf "$sudoers_file" || {
+      logger error "failed to validate sudoers file for $user"
+      rm -f "$sudoers_file"
       return 1
     }
-  done
 
-  echo "Sudoers setup completed for: ${users[*]}"
+    logger info "passwordless sudo setup completed for user: ${gray}${user}${reset}"
+  done
 }
