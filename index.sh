@@ -14,8 +14,10 @@ setup_fastfetch
 logger info "setting up sudoers..."
 setup_sudoers "$(get_real_user)"
 
-INSTALL_DESKTOP="y" && logger info "installing desktop packages..."
-INSTALL_DESKTOP="y" && install_desktop_packages
+if [ "$INSTALL_DESKTOP" = "y" ]; then
+  logger info "installing desktop packages..."
+  install_desktop_packages
+fi
 
 logger done "done."
 confirm "Reboot now?" "Y" && sudo reboot now || logger info "reboot later to apply changes."
