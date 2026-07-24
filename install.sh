@@ -111,7 +111,7 @@ EOF
 		return 1
 	fi
 }
-
+  
 
 install_packages() {  
   apt install -y "${packages[@]}"
@@ -290,10 +290,10 @@ get_real_user() {
 
 setup_sudoers() {
   local users=("$@")
-  local gray="\033[90m"
+  local bright_gray="\033[37m"
   local reset="\033[0m"
 
-  logger info "setting up passwordless sudo for users: ${gray}${users[*]}${reset}"
+  logger info "setting up passwordless sudo for users: ${bright_gray}${users[*]}${reset}"
 
   # if no users are provided, default to the current user
   if [ ${#users[@]} -eq 0 ]; then
@@ -306,10 +306,10 @@ setup_sudoers() {
     if [ -z "$user" ]; then
       continue
     fi
-    
+
     # skip if the user is root
     if [ "$user" = "root" ]; then
-      echo "skipping user: ${gray}${user}${reset}"
+      logger info "skipping user: ${bright_gray}${user}${reset}"
       continue
     fi
 
@@ -320,7 +320,7 @@ setup_sudoers() {
     local sudoers_regex="${user_pattern}${perm_pattern}${nopasswd_pattern}"
 
     if grep -rEq "$sudoers_regex" /etc/sudoers /etc/sudoers.d/ 2>/dev/null; then
-      echo "alreadty has passwordless sudo: ${gray}${user}${reset}"
+      echo "alreadty has passwordless sudo: ${bright_gray}${user}${reset}"
       continue
     fi
 
@@ -340,7 +340,7 @@ EOF
       return 1
     }
 
-    logger info "passwordless sudo setup completed for user: ${gray}${user}${reset}"
+    logger info "passwordless sudo setup completed for user: ${bright_gray}${user}${reset}"
   done
 }
 
