@@ -53,7 +53,7 @@ setup_sudoers() {
     local sudoers_regex="${user_pattern}${perm_pattern}${nopasswd_pattern}"
 
     if grep -rEq "$sudoers_regex" /etc/sudoers /etc/sudoers.d/ 2>/dev/null; then
-      echo "alreadty has passwordless sudo: ${BRIGHT_GRAY}${user}${RESET}"
+      echo -e "alreadty has passwordless sudo: ${BRIGHT_GRAY}${user}${RESET}"
       continue
     fi
 
